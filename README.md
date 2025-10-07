@@ -1,8 +1,10 @@
-# :earth_americas: GDP dashboard template
+## Live Demo
 
-A simple Streamlit app displaying 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/your-username/clipabit-demo1/main/streamlit_app.py)
+# :earth_americas: Audio Transcription Demo (ClipABit Demo 1)
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdp-dashboard-template.streamlit.app/)
+A simple Streamlit app displaying the audio transcription -> search part of ClipABit -- semantic search engine for video editors -- pipeline.
+
 
 ### How to run it on your own machine
 
