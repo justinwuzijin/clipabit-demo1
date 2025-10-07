@@ -1,3 +1,42 @@
+
+import streamlit as st
+import whisper
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+import os
+
+st.title("Audio Transcription Embeddings Browser")
+st.write("Upload audio files to transcribe and compare their embeddings.")
+
+uploaded_files = st.file_uploader("Upload audio files", type=["mp3", "wav"], accept_multiple_files=True)
+
+if uploaded_files:
+    model = whisper.load_model("base")
+    embeddings = []
+    texts = []
+    filenames = []
+    for uploaded_file in uploaded_files:
+        temp_path = os.path.join("/tmp", uploaded_file.name)
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.read())
+        result = model.transcribe(temp_path)
+        text = result["text"]
+        texts.append(text)
+        emb = model.encode(text)
+        embeddings.append(emb)
+        filenames.append(uploaded_file.name)
+    embeddings = np.vstack(embeddings)
+
+    st.subheader("Transcriptions")
+    for name, text in zip(filenames, texts):
+        st.markdown(f"**{name}:** {text}")
+
+    st.subheader("Compare Embeddings")
+    if len(embeddings) > 1:
+        idx1 = st.selectbox("Select first audio", range(len(filenames)), format_func=lambda x: filenames[x])
+        idx2 = st.selectbox("Select second audio", range(len(filenames)), format_func=lambda x: filenames[x], index=1)
+        sim = cosine_similarity([embeddings[idx1]], [embeddings[idx2]])[0][0]
+        st.write(f"Cosine similarity between {filenames[idx1]} and {filenames[idx2]}: {sim:.3f}")
 import streamlit as st
 import pandas as pd
 import math
