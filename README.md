@@ -52,7 +52,7 @@ The sidebar provides live data on the following metrics for each search and embe
 - **Computational Intensity**: Resource usage for each operation.
 ## Live Demo
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/your-username/clipabit-demo1/main/streamlit_app.py)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/justinwuzijin/clipabit-demo1/main/streamlit_app.py)
 
 ### How to Run
 

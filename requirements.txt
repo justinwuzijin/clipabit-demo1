@@ -1,2 +1,6 @@
 streamlit
 pandas
+openai-whisper
+scikit-learn
+streamlit
+sentence-transformers
