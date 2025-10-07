@@ -1,3 +1,18 @@
+## Search Algorithm Selection
+
+Users can choose which search algorithm to use for semantic retrieval:
+- **Average Fusion**: Combines vectors or similarity scores for retrieval.
+- **Tiny LLM Select**: Uses a small language model to select the primary modality for search.
+- **Tiny LLM Weighted**: Assigns weights to each modality using a small LLM and fuses results accordingly.
+
+## Metrics Displayed in the UI Sidebar
+
+The sidebar provides live data on the following metrics for each search and embedding operation:
+- **Quality**: Subjective measure (e.g., by virtue of having eyes, user can judge relevance).
+- **Latency**: Time to embed a query, search, and merge results.
+- **Embedding Time**: Per-clip embedding time (batch and single).
+- **Storage**: Database size per clip and total.
+- **Computational Intensity**: Resource usage for each operation.
 ## Live Demo
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/your-username/clipabit-demo1/main/streamlit_app.py)
