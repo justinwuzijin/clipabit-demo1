@@ -3,7 +3,7 @@ import streamlit as st
 import whisper
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 import time
 import tempfile
@@ -12,15 +12,15 @@ st.title("Audio Transcription Embeddings Browser")
 st.write("Upload audio files to transcribe and compare their embeddings.")
 
 # --- Chatbox Component ---
-def chatbox_component(whisper_model, embedding_model, v_texts, v_text_embs, v_audio_embs, v_visual_embs, segment_starts, algo, t0, t1, embed_start, embed_end):
+def chatbox_component(whisper_model, vectorizer, v_texts, v_text_embs, v_audio_embs, v_visual_embs, segment_starts, algo, t0, t1, embed_start, embed_end):
     st.markdown("---")
     st.subheader(":speech_balloon: Chatbox: Semantic Search")
     st.write("Type your search query below. The app will use semantic search to find the most relevant part of the transcript.")
     query = st.text_input("Type your search query and press Enter:")
     if algo and query:
         t_search_start = time.time()
-        # Generate query embeddings using sentence transformer
-        q_text = embedding_model.encode(query)
+        # Generate query embeddings using TF-IDF
+        q_text = vectorizer.transform([query]).toarray()[0]
         q_audio = q_text  # Placeholder
         q_visual = q_text # Placeholder
 
@@ -73,7 +73,7 @@ if uploaded_files:
     # Load models once
     with st.spinner("Loading models..."):
         whisper_model = whisper.load_model("base")
-        embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
     
     embeddings = []
     texts = []
@@ -102,7 +102,8 @@ if uploaded_files:
             segment_starts = [seg["start"] for seg in segments]
             embed_start = time.time()
             v_texts = segment_texts if segment_texts else [transcript]
-            v_text_embs = embedding_model.encode(v_texts)
+            # Fit vectorizer on the texts and transform them
+            v_text_embs = vectorizer.fit_transform(v_texts).toarray()
             v_audio_embs = v_text_embs  # Placeholder: use same as text
             v_visual_embs = v_text_embs # Placeholder: use same as text
             embed_end = time.time()
@@ -119,7 +120,7 @@ if uploaded_files:
             )
 
             # Call chatbox component with all required parameters
-            chatbox_component(whisper_model, embedding_model, v_texts, v_text_embs, v_audio_embs, v_visual_embs, segment_starts, algo, t0, t1, embed_start, embed_end)
+            chatbox_component(whisper_model, vectorizer, v_texts, v_text_embs, v_audio_embs, v_visual_embs, segment_starts, algo, t0, t1, embed_start, embed_end)
             
         except Exception as e:
             st.error(f"Error processing {uploaded_file.name}: {str(e)}")
