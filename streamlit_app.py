@@ -39,6 +39,17 @@ def ensure_ffmpeg():
             os.environ['PATH'] = os.path.dirname(path) + ':' + os.environ.get('PATH', '')
             return True
     
+    # Try additional common paths for cloud environments
+    cloud_paths = [
+        '/usr/bin/ffmpeg',
+        '/usr/local/bin/ffmpeg'
+    ]
+    
+    for path in cloud_paths:
+        if os.path.exists(path) and os.access(path, os.X_OK):
+            os.environ['PATH'] = os.path.dirname(path) + ':' + os.environ.get('PATH', '')
+            return True
+    
     return False
 
 # Check FFmpeg availability
