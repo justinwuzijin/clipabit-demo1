@@ -11,26 +11,43 @@ import subprocess
 
 # Ensure FFmpeg is available
 def ensure_ffmpeg():
+    # First try to find ffmpeg in PATH
     try:
-        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True)
+        result = subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True, text=True)
         return True
     except (subprocess.CalledProcessError, FileNotFoundError):
-        # Try common FFmpeg paths
-        ffmpeg_paths = [
-            '/opt/homebrew/bin/ffmpeg',
-            '/usr/local/bin/ffmpeg',
-            '/usr/bin/ffmpeg'
-        ]
-        for path in ffmpeg_paths:
-            if os.path.exists(path):
-                os.environ['PATH'] = os.path.dirname(path) + ':' + os.environ.get('PATH', '')
-                return True
-        return False
+        pass
+    
+    # Try common FFmpeg paths
+    ffmpeg_paths = [
+        '/opt/homebrew/bin/ffmpeg',
+        '/usr/local/bin/ffmpeg',
+        '/usr/bin/ffmpeg',
+        '/opt/homebrew/Cellar/ffmpeg/*/bin/ffmpeg'
+    ]
+    
+    for path in ffmpeg_paths:
+        if '*' in path:
+            # Handle glob patterns
+            import glob
+            matches = glob.glob(path)
+            for match in matches:
+                if os.path.exists(match) and os.access(match, os.X_OK):
+                    os.environ['PATH'] = os.path.dirname(match) + ':' + os.environ.get('PATH', '')
+                    return True
+        elif os.path.exists(path) and os.access(path, os.X_OK):
+            os.environ['PATH'] = os.path.dirname(path) + ':' + os.environ.get('PATH', '')
+            return True
+    
+    return False
 
 # Check FFmpeg availability
 if not ensure_ffmpeg():
     st.error("FFmpeg is not available. Please install FFmpeg to process audio files.")
+    st.error("Try running: brew install ffmpeg")
     st.stop()
+else:
+    st.success("✅ FFmpeg is available and ready to process audio files!")
 
 st.title("Audio Transcription Embeddings Browser")
 st.write("Upload audio files to transcribe and compare their embeddings.")
